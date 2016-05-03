@@ -6,6 +6,12 @@
 // This is implemented using a hash function and a set of bins that determine
 // the location of the item.
 //
+// Being that maps have two values for each index, a key and a value, its
+// iterator also provides access to both values. When iterating a pair
+// containing both the key and the value will be returned. Furthermore, due
+// to the nature of a map there is only a constant iterator defined for this
+// class.
+//
 #ifndef NGE_CNTR_MAP_H
 #define NGE_CNTR_MAP_H
 
@@ -22,6 +28,7 @@ namespace cntr
 
 // TODO: consider using progressive bin copy afte resize if necessary
 // TODO: cache hashes in separate array if necessary
+// TODO: define non-constant iterator without *() operator
 template <typename K, typename V>
 class Map
 {
@@ -167,98 +174,9 @@ class Map
   public:
     // CLASSES
     /**
-     * Iterates through the key set.
-     */
-    class ConstKeyIterator
-    {
-      private:
-        // MEMBERS
-        /**
-         * The set of values that are being iterated.
-         */
-        const DynamicArray<Pair>* _iterValues;
-
-        /**
-         * The current position in the set.
-         */
-        uint32 _iterIndex;
-
-      public:
-        // CONSTRUCTORS
-        /**
-         * Constructs a new iterator.
-         */
-        ConstKeyIterator();
-
-        /**
-         * Constructs an iterator for the map with the given index.
-         */
-        ConstKeyIterator( const Map<K, V>* map, uint32 index );
-
-        /**
-         * Constructs a copy of the given iterator.
-         */
-        ConstKeyIterator( const ConstKeyIterator& iter );
-
-        /**
-         * Destructs the iterator.
-         */
-        ~ConstKeyIterator();
-
-        // OPERATORS
-        /**
-         * Assigns this as a copy of the other iterator.
-         */
-        ConstKeyIterator& operator=( const ConstKeyIterator& iter );
-
-        /**
-         * Moves to the next item.
-         */
-        ConstKeyIterator& operator++();
-
-        /**
-         * Moves to the next item.
-         */
-        ConstKeyIterator& operator++( int32 );
-
-        /**
-         * Moves to the previous item.
-         */
-        ConstKeyIterator& operator--();
-
-        /**
-         * Moves to the previous item.
-         */
-        ConstKeyIterator& operator--( int32 );
-
-        /**
-         * Gets the element at the current position.
-         */
-        const K& operator*() const;
-
-        /**
-         * Gets the element at the current position.
-         *
-         * The value must not be modified in a way that it's hash code would
-         * change. To do so will cause undefined behavior.
-         */
-        const K* operator->() const;
-
-        /**
-         * Checks if the other iterator is at the same position.
-         */
-        bool operator==( const ConstKeyIterator& iter ) const;
-
-        /**
-         * Checks if the other iterator is not at the same position.
-         */
-        bool operator!=( const ConstKeyIterator& iter ) const;
-    };
-
-    /**
      * Iterates through the value set.
      */
-    class ConstValueIterator
+    class ConstIterator
     {
       private:
         // MEMBERS
@@ -277,53 +195,53 @@ class Map
         /**
          * Constructs a new iterator.
          */
-        ConstValueIterator();
+        ConstIterator();
 
         /**
          * Constructs an iterator for the map with the given index.
          */
-        ConstValueIterator( const Map<K, V>* map, uint32 index );
+        ConstIterator( const Map<K, V>* map, uint32 index );
 
         /**
          * Constructs a copy of the given iterator.
          */
-        ConstValueIterator( const ConstValueIterator& iter );
+        ConstIterator( const ConstIterator& iter );
 
         /**
          * Destructs the iterator.
          */
-        ~ConstValueIterator();
+        ~ConstIterator();
 
         // OPERATORS
         /**
          * Assigns this as a copy of the other iterator.
          */
-        ConstValueIterator& operator=( const ConstValueIterator& iter );
+        ConstIterator& operator=( const ConstIterator& iter );
 
         /**
          * Moves to the next item.
          */
-        ConstValueIterator& operator++();
+        ConstIterator& operator++();
 
         /**
          * Moves to the next item.
          */
-        ConstValueIterator& operator++( int32 );
+        ConstIterator& operator++( int32 );
 
         /**
          * Moves to the previous item.
          */
-        ConstValueIterator& operator--();
+        ConstIterator& operator--();
 
         /**
          * Moves to the previous item.
          */
-        ConstValueIterator& operator--( int32 );
+        ConstIterator& operator--( int32 );
 
         /**
          * Gets the element at the current position.
          */
-        const V& operator*() const;
+        const Pair& operator*() const;
 
         /**
          * Gets the element at the current position.
@@ -331,17 +249,17 @@ class Map
          * The value must not be modified in a way that it's hash code would
          * change. To do so will cause undefined behavior.
          */
-        const V* operator->() const;
+        const Pair* operator->() const;
 
         /**
          * Checks if the other iterator is at the same position.
          */
-        bool operator==( const ConstValueIterator& iter ) const;
+        bool operator==( const ConstIterator& iter ) const;
 
         /**
          * Checks if the other iterator is not at the same position.
          */
-        bool operator!=( const ConstValueIterator& iter ) const;
+        bool operator!=( const ConstIterator& iter ) const;
     };
 
     // STRUCTURES
@@ -450,9 +368,12 @@ class Map
     void put( const K& key, V&& value );
 
     /**
-     * Removes the mapping for the specified key.
+     * Removes the mapping for the specified key and returns the value.
+     *
+     * Behavior is undefined when:
+     * There isn't a mapping for the key.
      */
-    void remove( const K& key );
+    V remove( const K& key );
 
     /**
      * Checks if the map contains a mapping for the given key.
@@ -465,24 +386,14 @@ class Map
     void clear();
 
     /**
-     * Gets an iterator for the mapped values.
+     * Gets an iterator for the mappings.
      */
-    ConstValueIterator cbegin() const;
+    ConstIterator cbegin() const;
 
     /**
-     * Gets an iterator for the mapped values at the end of the list.
+     * Gets an iterator for the mappings.
      */
-    ConstValueIterator cend() const;
-
-    /**
-     * Gets an iterator for the key set.
-     */
-    ConstKeyIterator cKeysBegin() const;
-
-    /**
-     * Gets an iterator for the key set at the end.
-     */
-    ConstKeyIterator cKeysEnd() const;
+    ConstIterator cend() const;
 
     /**
      * Gets the number of key-value pairs in the map.
@@ -764,7 +675,7 @@ void Map<K, V>::put( const K& key, V&& value )
 }
 
 template <typename K, typename V>
-void Map<K, V>::remove( const K& key )
+V Map<K, V>::remove( const K& key )
 {
     if ( shouldShrink() )
     {
@@ -773,22 +684,24 @@ void Map<K, V>::remove( const K& key )
 
     uint32 binIndex = findBinForKey( key );
     uint32 i;
-    if ( !isBinEmpty( binIndex ) )
+
+    assert( !isBinEmpty( binIndex ) );
+
+    --_binsInUse;
+    V value( _pairs.removeAt( _bins[binIndex] ).value );
+
+    // correct bin indices
+    for ( i = 0; i < _binCount; ++i )
     {
-        --_binsInUse;
-        _pairs.removeAt( _bins[binIndex] );
-
-        // correct bin indices
-        for ( i = 0; i < _binCount; ++i )
+        if ( !isBinEmpty( i ) && _bins[i] > _bins[binIndex] )
         {
-            if ( !isBinEmpty( i ) && _bins[i] > _bins[binIndex] )
-            {
-                --( _bins[i] );
-            }
+            --( _bins[i] );
         }
-
-        _bins[binIndex] = BIN_EMPTY;
     }
+
+    _bins[binIndex] = BIN_EMPTY;
+
+    return value;
 }
 
 template <typename K, typename V>
@@ -809,31 +722,31 @@ void Map<K, V>::clear()
 
 template <typename K, typename V>
 inline
-typename Map<K, V>::ConstValueIterator Map<K, V>::cbegin() const
+typename Map<K, V>::ConstIterator Map<K, V>::cbegin() const
 {
-    return ConstValueIterator( this, 0 );
+    return ConstIterator( this, 0 );
 }
 
 template <typename K, typename V>
 inline
-typename Map<K, V>::ConstValueIterator Map<K, V>::cend() const
+typename Map<K, V>::ConstIterator Map<K, V>::cend() const
 {
-    return ConstValueIterator( this, _pairs.size() );
+    return ConstIterator( this, _pairs.size() );
 }
 
-template <typename K, typename V>
-inline
-typename Map<K, V>::ConstKeyIterator Map<K, V>::cKeysBegin() const
-{
-    return ConstKeyIterator( this, 0 );
-}
-
-template <typename K, typename V>
-inline
-typename Map<K, V>::ConstKeyIterator Map<K, V>::cKeysEnd() const
-{
-    return ConstKeyIterator( this, _pairs.size() );
-}
+//template <typename K, typename V>
+//inline
+//typename Map<K, V>::ConstKeyIterator Map<K, V>::cKeysBegin() const
+//{
+//    return ConstKeyIterator( this, 0 );
+//}
+//
+//template <typename K, typename V>
+//inline
+//typename Map<K, V>::ConstKeyIterator Map<K, V>::cKeysEnd() const
+//{
+//    return ConstKeyIterator( this, _pairs.size() );
+//}
 
 template <typename K, typename V>
 inline
@@ -881,7 +794,7 @@ uint32 Map<K, V>::findBinForKey( const K& key ) const
     uint32 probes;
     for ( i = wrap( hashCode ), probes = 0;
           !isBinEmpty( i ) && !doesBinContain( i, key );
-          i = probe( ++probes ) )
+          i = wrap( i + probe( ++probes ) ) )
     {
         // do nothing
     }
@@ -980,124 +893,17 @@ void Map<K, V>::clearBins()
     mem::MemoryUtils::set( _bins, BIN_EMPTY, _binCount );
 }
 
-// KEY ITERATOR CONSTRUCTORS
-template <typename K, typename V>
-inline
-Map<K, V>::ConstKeyIterator::ConstKeyIterator()
-    : _iterValues( nullptr ), _iterIndex( 0 )
-{
-}
-
-template <typename K, typename V>
-inline
-Map<K, V>::ConstKeyIterator::ConstKeyIterator( const Map<K, V>* map,
-                                               uint32 index )
-    : _iterValues( &( map->_pairs ) ), _iterIndex( index )
-{
-}
-
-template <typename K, typename V>
-inline
-Map<K, V>::ConstKeyIterator::ConstKeyIterator( const ConstKeyIterator& iter )
-    : _iterValues( iter._iterValues ), _iterIndex( iter._iterIndex )
-{
-}
-
-template <typename K, typename V>
-inline
-Map<K, V>::ConstKeyIterator::~ConstKeyIterator()
-{
-}
-
-// KEY ITERATOR OPERATORS
-template <typename K, typename V>
-inline
-typename Map<K, V>::ConstKeyIterator&
-Map<K, V>::ConstKeyIterator::operator=( const ConstKeyIterator& iter )
-{
-    _iterValues = iter._iterValues;
-    _iterIndex = iter._iterIndex;
-
-    return *this;
-}
-
-template <typename K, typename V>
-inline
-typename Map<K, V>::ConstKeyIterator&
-Map<K, V>::ConstKeyIterator::operator++()
-{
-    ++_iterIndex;
-    return *this;
-}
-
-template <typename K, typename V>
-inline
-typename Map<K, V>::ConstKeyIterator&
-Map<K, V>::ConstKeyIterator::operator++( int32 )
-{
-    ++_iterIndex;
-    return *this;
-}
-
-template <typename K, typename V>
-inline
-typename Map<K, V>::ConstKeyIterator&
-Map<K, V>::ConstKeyIterator::operator--()
-{
-    --_iterIndex;
-    return *this;
-}
-
-template <typename K, typename V>
-inline
-typename Map<K, V>::ConstKeyIterator&
-Map<K, V>::ConstKeyIterator::operator--( int32 )
-{
-    --_iterIndex;
-    return *this;
-}
-
-template <typename K, typename V>
-inline
-const K& Map<K, V>::ConstKeyIterator::operator*() const
-{
-    return ( *_iterValues )[_iterIndex].key;
-}
-
-template <typename K, typename V>
-inline
-const K* Map<K, V>::ConstKeyIterator::operator->() const
-{
-    return &( *_iterValues )[_iterIndex].key;
-}
-
-template <typename K, typename V>
-inline
-bool Map<K, V>::ConstKeyIterator::operator==(
-    const ConstKeyIterator& iter ) const
-{
-    return _iterValues == iter._iterValues && _iterIndex == iter._iterIndex;
-}
-
-template <typename K, typename V>
-inline
-bool Map<K, V>::ConstKeyIterator::operator!=(
-    const ConstKeyIterator& iter ) const
-{
-    return _iterValues != iter._iterValues || _iterIndex != iter._iterIndex;
-}
-
 // VALUE ITERATOR CONSTRUCTORS
 template <typename K, typename V>
 inline
-Map<K, V>::ConstValueIterator::ConstValueIterator()
+Map<K, V>::ConstIterator::ConstIterator()
     : _iterValues( nullptr ), _iterIndex( 0 )
 {
 }
 
 template <typename K, typename V>
 inline
-Map<K, V>::ConstValueIterator::ConstValueIterator( const Map<K, V>* map,
+Map<K, V>::ConstIterator::ConstIterator( const Map<K, V>* map,
                                                    uint32 index )
     : _iterValues( &( map->_pairs ) ), _iterIndex( index )
 {
@@ -1105,23 +911,23 @@ Map<K, V>::ConstValueIterator::ConstValueIterator( const Map<K, V>* map,
 
 template <typename K, typename V>
 inline
-Map<K, V>::ConstValueIterator::ConstValueIterator(
-    const ConstValueIterator& iter )
+Map<K, V>::ConstIterator::ConstIterator(
+    const ConstIterator& iter )
     : _iterValues( iter._iterValues ), _iterIndex( iter._iterIndex )
 {
 }
 
 template <typename K, typename V>
 inline
-Map<K, V>::ConstValueIterator::~ConstValueIterator()
+Map<K, V>::ConstIterator::~ConstIterator()
 {
 }
 
 // VALUE ITERATOR OPERATORS
 template <typename K, typename V>
 inline
-typename Map<K, V>::ConstValueIterator&
-Map<K, V>::ConstValueIterator::operator=( const ConstValueIterator& iter )
+typename Map<K, V>::ConstIterator&
+Map<K, V>::ConstIterator::operator=( const ConstIterator& iter )
 {
     _iterValues = iter._iterValues;
     _iterIndex = iter._iterIndex;
@@ -1131,8 +937,8 @@ Map<K, V>::ConstValueIterator::operator=( const ConstValueIterator& iter )
 
 template <typename K, typename V>
 inline
-typename Map<K, V>::ConstValueIterator&
-Map<K, V>::ConstValueIterator::operator++()
+typename Map<K, V>::ConstIterator&
+Map<K, V>::ConstIterator::operator++()
 {
     ++_iterIndex;
     return *this;
@@ -1140,8 +946,8 @@ Map<K, V>::ConstValueIterator::operator++()
 
 template <typename K, typename V>
 inline
-typename Map<K, V>::ConstValueIterator&
-Map<K, V>::ConstValueIterator::operator++( int32 )
+typename Map<K, V>::ConstIterator&
+Map<K, V>::ConstIterator::operator++( int32 )
 {
     ++_iterIndex;
     return *this;
@@ -1149,8 +955,8 @@ Map<K, V>::ConstValueIterator::operator++( int32 )
 
 template <typename K, typename V>
 inline
-typename Map<K, V>::ConstValueIterator&
-Map<K, V>::ConstValueIterator::operator--()
+typename Map<K, V>::ConstIterator&
+Map<K, V>::ConstIterator::operator--()
 {
     --_iterIndex;
     return *this;
@@ -1158,8 +964,8 @@ Map<K, V>::ConstValueIterator::operator--()
 
 template <typename K, typename V>
 inline
-typename Map<K, V>::ConstValueIterator&
-Map<K, V>::ConstValueIterator::operator--( int32 )
+typename Map<K, V>::ConstIterator&
+Map<K, V>::ConstIterator::operator--( int32 )
 {
     --_iterIndex;
     return *this;
@@ -1167,30 +973,30 @@ Map<K, V>::ConstValueIterator::operator--( int32 )
 
 template <typename K, typename V>
 inline
-const V& Map<K, V>::ConstValueIterator::operator*() const
+const typename Map<K, V>::Pair& Map<K, V>::ConstIterator::operator*() const
 {
-    return ( *_iterValues )[_iterIndex].value;
+    return ( *_iterValues )[_iterIndex];
 }
 
 template <typename K, typename V>
 inline
-const V* Map<K, V>::ConstValueIterator::operator->() const
+const typename Map<K, V>::Pair* Map<K, V>::ConstIterator::operator->() const
 {
-    return &( *_iterValues )[_iterIndex].value;
+    return &( *_iterValues )[_iterIndex];
 }
 
 template <typename K, typename V>
 inline
-bool Map<K, V>::ConstValueIterator::operator==(
-    const ConstValueIterator& iter ) const
+bool Map<K, V>::ConstIterator::operator==(
+    const ConstIterator& iter ) const
 {
     return _iterValues == iter._iterValues && _iterIndex == iter._iterIndex;
 }
 
 template <typename K, typename V>
 inline
-bool Map<K, V>::ConstValueIterator::operator!=(
-    const ConstValueIterator& iter ) const
+bool Map<K, V>::ConstIterator::operator!=(
+    const ConstIterator& iter ) const
 {
     return _iterValues != iter._iterValues || _iterIndex != iter._iterIndex;
 }

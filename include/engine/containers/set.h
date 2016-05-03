@@ -17,6 +17,7 @@ namespace cntr
 
 // TODO: consider using progressive bin copy after resize if necessary
 // TODO: cache hashes in separate array if necessary
+// TODO: define non-constant iterator without *() operator
 template <typename T>
 class Set
 {

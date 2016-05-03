@@ -69,41 +69,41 @@ bool Program::load( const Shader::LogCallback* callback )
 
     _binding = glCreateProgram();
 
-    for ( auto iter = _shaders.cKeysBegin();
-          iter != _shaders.cKeysEnd();
+    for ( auto iter = _shaders.cbegin();
+          iter != _shaders.cend();
           ++iter )
     {
-        glAttachShader( _binding, _shaders[*iter].binding() );
+        glAttachShader( _binding, iter->value.binding() );
     }
 }
 
 bool Program::loadShaders( const Shader::LogCallback* callback )
 {
     bool wasSuccessful = true;
-    for ( auto iter = _shaders.cKeysBegin();
-          iter != _shaders.cKeysEnd();
+    for ( auto iter = _shaders.cbegin();
+          iter != _shaders.cend();
           ++iter )
     {
         if ( callback != nullptr )
         {
-            wasSuccessful &= _shaders[*iter].load( *callback );
+            wasSuccessful &= _shaders[iter->key].load( *callback );
         }
         else
         {
-            wasSuccessful &= _shaders[*iter].load();
+            wasSuccessful &= _shaders[iter->key].load();
         }
     }
 
     // unload on failure
     if ( !wasSuccessful )
     {
-        for ( auto iter = _shaders.cKeysBegin();
-              iter != _shaders.cKeysEnd();
+        for ( auto iter = _shaders.cbegin();
+              iter != _shaders.cend();
               ++iter )
         {
-            if ( _shaders[*iter].isLoaded() )
+            if ( _shaders[iter->key].isLoaded() )
             {
-                _shaders[*iter].unload();
+                _shaders[iter->key].unload();
             }
         }
     }

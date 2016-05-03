@@ -73,7 +73,7 @@ TEST( Map, CopyAndMove )
     Map<String, String> map( &pairAlloc, &binAlloc );
     DynamicArray<String> keys = getKeys( &alloc );
 
-    int i;
+    uint32 i;
     for ( i = 0; i < keys.size(); ++i )
     {
         map[keys[i]] = keys[i];
@@ -93,5 +93,119 @@ TEST( Map, CopyAndMove )
 
     ASSERT_EQ( 0, copy.size() );
     ASSERT_NE( 0, map.size() );
+    ASSERT_TRUE( copy.isEmpty() );
+    ASSERT_FALSE( map.isEmpty() );
 }
 
+TEST( Map, InsertionAndRemoval )
+{
+    using namespace nge::cntr;
+    using namespace nge::mem;
+    using namespace nge;
+
+    DefaultAllocator<String> alloc;
+    CountingAllocator<Map<String, String>::Pair> pairAlloc;
+    CountingAllocator<uint32> binAlloc;
+
+    Map<String, String> map( &pairAlloc, &binAlloc );
+    DynamicArray<String> keys = getKeys( &alloc );
+
+    uint32 i;
+    for ( i = 0; i < keys.size(); ++i )
+    {
+        map[keys[i]] = keys[i];
+        ASSERT_STREQ( keys[i].c_str(), map[keys[i]].c_str() );
+        ASSERT_TRUE( map.has( keys[i] ) );
+    }
+
+    for ( i = 0; i < keys.size(); ++i )
+    {
+        ASSERT_STREQ( keys[i].c_str(), map.remove( keys[i] ).c_str() );
+    }
+
+    for ( i = 0; i < keys.size(); ++i )
+    {
+        map.put( keys[i], keys[i] );
+        ASSERT_STREQ( keys[i].c_str(), map[keys[i]].c_str() );
+    }
+
+    map.clear();
+
+    for ( i = 0; i < keys.size(); ++i )
+    {
+        String key = keys[i];
+        map.put( keys[i], std::move( key ) );
+        ASSERT_STREQ( keys[i].c_str(), map[keys[i]].c_str() );
+        ASSERT_STRNE( key.c_str(), map[keys[i]].c_str() );
+    }
+
+    map.clear();
+
+    ASSERT_EQ( 0, map.size() );
+    ASSERT_TRUE( map.isEmpty() );
+
+    for ( i = 0; i < keys.size(); ++i )
+    {
+        map[keys[i]] = keys[i];
+        ASSERT_STREQ( keys[i].c_str(), map[keys[i]].c_str() );
+        ASSERT_TRUE( map.has( keys[i] ) );
+    }
+
+    for ( i = 0; i < keys.size(); ++i )
+    {
+        ASSERT_STREQ( keys[i].c_str(), map.remove( keys[i] ).c_str() );
+    }
+
+    for ( i = 0; i < keys.size(); ++i )
+    {
+        map.put( keys[i], keys[i] );
+        ASSERT_STREQ( keys[i].c_str(), map[keys[i]].c_str() );
+    }
+
+    map.clear();
+
+    for ( i = 0; i < keys.size(); ++i )
+    {
+        String key = keys[i];
+        map.put( keys[i], std::move( key ) );
+        ASSERT_STREQ( keys[i].c_str(), map[keys[i]].c_str() );
+        ASSERT_STRNE( key.c_str(), map[keys[i]].c_str() );
+    }
+
+    map.clear();
+
+    ASSERT_EQ( 0, map.size() );
+    ASSERT_TRUE( map.isEmpty() );
+}
+
+TEST( Map, Iterator )
+{
+    using namespace nge::cntr;
+    using namespace nge::mem;
+    using namespace nge;
+
+    DefaultAllocator<String> alloc;
+    CountingAllocator<Map<String, String>::Pair> pairAlloc;
+    CountingAllocator<uint32> binAlloc;
+
+    Map<String, String> map( &pairAlloc, &binAlloc );
+    DynamicArray<String> keys = getKeys( &alloc );
+
+    uint32 i;
+    for ( i = 0; i < keys.size(); ++i )
+    {
+        map[keys[i]] = keys[i];
+    }
+
+    for ( auto iter = map.cbegin(); iter != map.cend(); ++iter )
+    {
+        ASSERT_STREQ( iter->key.c_str(), iter->value.c_str() );
+    }
+
+    auto iter = map.cbegin();
+    for ( i = 0; i < map.size(); ++i, ++iter )
+    {
+        ASSERT_STREQ( keys[i].c_str(), iter->key.c_str() );
+        ASSERT_STREQ( keys[i].c_str(), iter->value.c_str() );
+    }
+}

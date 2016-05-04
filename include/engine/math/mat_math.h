@@ -123,7 +123,26 @@ struct Mat
     static TMat2x2<T> transpose( const TMat2x2<T>& m );
 
     /**
-     * Creates the translation matrix for the given offset.
+     * Creates the 2D translation matrix for the given offset.
+     *
+     * @param x The x offset.
+     * @param y The y offset.
+     * @return The translation matrix.
+     */
+    template <typename T>
+    static TMat3x3<T> translate( T x, T y );
+
+    /**
+     * Creates the 2D translation matrix for the given offset.
+     *
+     * @param offset The offset vector.
+     * @return The translation matrix.
+     */
+    template <typename T>
+    static TMat3x3<T> translate( TVec2<T> offset );
+
+    /**
+     * Creates the 3D translation matrix for the given offset.
      *
      * @param x The x offset.
      * @param y The y offset.
@@ -134,7 +153,7 @@ struct Mat
     static TMat4x4<T> translate( T x, T y, T z );
 
     /**
-     * Creates the translation matrix for the given offset.
+     * Creates the 3D translation matrix for the given offset.
      *
      * @param offset The offset vector.
      * @return The translation matrix.
@@ -517,9 +536,27 @@ TMat2x2<T> Mat::transpose( const TMat2x2<T>& m )
 
 template <typename T>
 inline
+TMat3x3<T> Mat::translate( T x, T y )
+{
+    return translate( TVec2<T>( x, y ) );
+}
+
+template <typename T>
+inline
+TMat3x3<T> Mat::translate( TVec2<T> offset )
+{
+    return TMat3x3<T>(
+        1, 0, offset.x,
+        0, 1, offset.y,
+        0, 0, 1
+    );
+}
+
+template <typename T>
+inline
 TMat4x4<T> Mat::translate( T x, T y, T z )
 {
-    return Mat::translate( TVec3<T>( x, y, z ));
+    return Mat::translate( TVec3<T>( x, y, z ) );
 }
 
 template <typename T>
@@ -529,7 +566,7 @@ TMat4x4<T> Mat::translate( TVec3<T> offset )
     return TMat4x4<T>(
         1, 0, 0, offset.x,
         0, 1, 0, offset.y,
-        0, 0, 0, offset.z,
+        0, 0, 1, offset.z,
         0, 0, 0, 1
     );
 }

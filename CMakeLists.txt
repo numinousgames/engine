@@ -20,6 +20,18 @@ elseif( VC )
 endif()
 
 #
+# CONSTANT DEFINITIONS
+#
+
+# DIRECTORIES
+set( INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include )
+set( EXT_DIR ${PROJECT_SOURCE_DIR}/ext )
+set( LIB_DIR ${PROJECT_SOURCE_DIR}/lib )
+set( SOURCE_DIR ${PROJECT_SOURCE_DIR}/src )
+set( RES_DIR ${PROJECT_SOURCE_DIR}/res )
+set( TEST_DIR ${PROJECT_SOURCE_DIR}/test )
+
+#
 # SOURCE DEFINITIONS
 #
 
@@ -158,23 +170,11 @@ set(
 
 set(
     SIM_FILES
-    # CONTROLLERS
 
+    # CONTROLLERS
     src/sim/objects/boid.cpp
     src/sim/objects/boid.h
 )
-
-#
-# CONSTANT DEFINITIONS
-#
-
-# DIRECTORIES
-set( INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include )
-set( EXT_DIR ${PROJECT_SOURCE_DIR}/ext )
-set( LIB_DIR ${PROJECT_SOURCE_DIR}/lib )
-set( SOURCE_DIR ${PROJECT_SOURCE_DIR}/src )
-set( RES_DIR ${PROJECT_SOURCE_DIR}/res )
-set( TEST_DIR ${PROJECT_SOURCE_DIR}/test )
 
 #
 # MAIN PROJECT
@@ -196,7 +196,7 @@ include_directories(
     ${OPENGL_INCLUDE_DIRS}
 )
 
-# MAIN EXECUTABLE
+# MAIN LIBRARY
 add_library(
     numinous-engine
     ${ENGINE_FILES}

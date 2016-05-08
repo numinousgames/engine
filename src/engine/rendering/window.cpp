@@ -17,6 +17,9 @@ bool Window::open( const std::string& title, uint32 width, uint32 height )
     _window = glfwCreateWindow( width, height, title.c_str(),
                                 nullptr, nullptr );
 
+    _width = width;
+    _height = height;
+
     if ( _window == nullptr )
     {
         return false;

@@ -2,7 +2,7 @@
 #ifndef NGE_WORLD_VIEW_PORT_H
 #define NGE_WORLD_VIEW_PORT_H
 
-#include "engine/rendering/window.h"
+#include "engine/rendering/iwindow.h"
 #include "engine/world/ngudef.h"
 
 namespace nge

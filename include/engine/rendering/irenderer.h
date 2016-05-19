@@ -15,7 +15,7 @@
 
 #include "engine/intdef.h"
 #include "engine/rendering/irenderable.h"
-#include "engine/rendering/window.h"
+#include "engine/rendering/iwindow.h"
 
 namespace nge
 {
@@ -52,7 +52,7 @@ class IRenderer
     /**
      * Attaches to the specified window.
      */
-    virtual void attach( Window* window ) = 0;
+    virtual void attach( IWindow* window ) = 0;
 
     /**
      * Draws the scene.

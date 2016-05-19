@@ -19,6 +19,10 @@ typedef uint16_t uint16;
 typedef uint32_t uint32;
 typedef uint64_t uint64;
 
+// POINTER INTEGERS
+typedef intptr_t intptr;
+typedef uintptr_t uintptr;
+
 } // End nspc nge
 
 #endif // NGE_INTDEF_H

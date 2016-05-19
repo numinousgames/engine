@@ -1,4 +1,5 @@
 // gl_renderer.cpp
+#include <GL/gl.h>
 #include "engine/rendering/gl_renderer.h"
 
 namespace nge
@@ -22,7 +23,7 @@ void GlRenderer::removeAllRenderables()
     _items.clear();
 }
 
-void GlRenderer::attach( Window* window )
+void GlRenderer::attach( IWindow* window )
 {
     _window = window;
 }

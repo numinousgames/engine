@@ -2,6 +2,7 @@
 #ifndef NGE_RNDR_GL_RENDERER_H
 #define NGE_RNDR_GL_RENDERER_H
 
+#include "engine/containers/dynamic_array.h"
 #include "engine/rendering/irenderer.h"
 
 namespace nge
@@ -22,7 +23,7 @@ class GlRenderer : public IRenderer<IRenderable>
     /**
      * The window the renderer is attached to.
      */
-    Window* _window;
+    IWindow* _window;
 
     /**
      * If the renderer is currently drawing.
@@ -72,7 +73,7 @@ class GlRenderer : public IRenderer<IRenderable>
     /**
      * Attaches the renderer to a window.
      */
-    virtual void attach( Window* window );
+    virtual void attach( IWindow* window );
 
     /**
      * Draws the next frame.

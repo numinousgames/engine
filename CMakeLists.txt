@@ -111,8 +111,14 @@ set(
     include/engine/rendering/irenderer.h
     #    src/engine/rndr/shape.cpp
     #    include/engine/rndr/shape.h
-    src/engine/rendering/window.cpp
-    include/engine/rendering/window.h
+    src/engine/rendering/iwindow.cpp
+    include/engine/rendering/iwindow.h
+    src/engine/rendering/window_impl.cpp
+    include/engine/rendering/window_impl.h
+    include/engine/rendering/iwindow_callback.h
+    src/engine/rendering/iwindow_callback.cpp
+    src/engine/rendering/window_manager.cpp
+    include/engine/rendering/window_manager.h
     # UTILITY
     src/engine/utility/hasher.cpp
     include/engine/utility/hasher.h
